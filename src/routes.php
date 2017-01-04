@@ -55,6 +55,9 @@ $app->post('/callback', function (\Slim\Http\Request $req, \Slim\Http\Response $
                 $profile = $profileRes->getJSONDecodedBody();
                 $bot->replyText($event->getReplyToken(), $profile['displayName']);
             }
+        } elseif (preg_match('/sticker/i', $replyText)){
+            $stickerMessageBuilder = new \LINE\LINEBot\MessageBuilder\StickerMessageBuilder(2, rand(501, 527));
+            $bot->replyMessage($event->getReplyToken(), $stickerMessageBuilder);
         } elseif (preg_match('/dance/i', $replyText)){
             $image = "https://soliloqueue.files.wordpress.com/2015/01/dancing.gif?w=614";
             $imageMessageBuilder = new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($image, $image);
