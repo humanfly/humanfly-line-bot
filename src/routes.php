@@ -48,7 +48,17 @@ $app->post('/callback', function (\Slim\Http\Request $req, \Slim\Http\Response $
         }
         $replyText = $event->getText();
         $logger->info('Reply text: ' . $replyText);
-        $resp = $bot->replyText($event->getReplyToken(), $replyText);
+
+        if(strpos($replyText, '我是誰') || preg_match('Who[\s]+am[\s]+I', $replyText)){
+            $profileRes = $bot->getProfile($event->getUserId());
+            if ($profileRes->isSucceeded()) {
+                $profile = $profileRes->getJSONDecodedBody();
+                $resp =  $bot->replyText($event->getReplyToken(), $profile['displayName']);
+            }
+        } else{
+            $resp = $bot->replyText($event->getReplyToken(), $replyText);
+        }
+
         $logger->info($resp->getHTTPStatus() . ': ' . $resp->getRawBody());
     }
     $res->write('OK');
