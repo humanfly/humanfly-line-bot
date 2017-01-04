@@ -47,20 +47,24 @@ $app->post('/callback', function (\Slim\Http\Request $req, \Slim\Http\Response $
             continue;
         }
         $replyText = $event->getText();
-        $logger->info('Reply text: ' . $replyText);
+        //$logger->info('Reply text: ' . $replyText);
 
-        if(strpos($replyText, '我是誰') || preg_match("/Who[\s]+am[\s]+I/i", $replyText)){
+        if(preg_match('/Who[\s]+am[\s]+I/i', $replyText)){
             $profileRes = $bot->getProfile($event->getUserId());
             if ($profileRes->isSucceeded()) {
                 $profile = $profileRes->getJSONDecodedBody();
-                $resp =  $bot->replyText($event->getReplyToken(), $profile['displayName']);
+                $bot->replyText($event->getReplyToken(), $profile['displayName']);
             }
-        } else{
-            $resp = $bot->replyText($event->getReplyToken(), $replyText);
+        } elseif (preg_match('/dance/i', $replyText)){
+            $image = "https://soliloqueue.files.wordpress.com/2015/01/dancing.gif?w=614";
+            $imageMessageBuilder = new \LINE\LINEBot\MessageBuilder\ImageMessageBuilder($image, $image);
+            $bot->replyMessage($event->getReplyToken(), $imageMessageBuilder);
+        }else{
+            $bot->replyText($event->getReplyToken(), $replyText);
         }
 
-        $logger->info($resp->getHTTPStatus() . ': ' . $resp->getRawBody());
+         //$logger->info($resp->getHTTPStatus() . ': ' . $resp->getRawBody());
     }
-    $res->write('OK');
-    return $res;
+    //$res->write('OK');
+    //return $res;
 });
