@@ -49,7 +49,7 @@ $app->post('/callback', function (\Slim\Http\Request $req, \Slim\Http\Response $
         $replyText = $event->getText();
         $logger->info('Reply text: ' . $replyText);
 
-        if(strpos($replyText, '我是誰') || preg_match('Who[\s]+am[\s]+I', $replyText)){
+        if(strpos($replyText, '我是誰') || preg_match("/Who[\s]+am[\s]+I/i", $replyText)){
             $profileRes = $bot->getProfile($event->getUserId());
             if ($profileRes->isSucceeded()) {
                 $profile = $profileRes->getJSONDecodedBody();
